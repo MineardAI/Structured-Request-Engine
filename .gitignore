@@ -15,10 +15,10 @@ Thumbs.db
 *.swo
 *~
 
-# Internal workspace instructions and execution history are not part of the
-# public source publication set.
+# Internal workspace instructions, execution history, and derivative onboarding
+# material are not part of the public source publication set.
 /AGENTS.md
 /REPOSITORY_COMMANDS.md
 /REPOSITORY_RULES.md
 /docs/Prompts/
-/PROJECT_SUITE/STATUS_LOG/
+/PROJECT_SUITE/
