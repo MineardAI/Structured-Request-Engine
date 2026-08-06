@@ -1,0 +1,290 @@
+SRE-CONTRACT-001
+Source Submission and Intake
+
+Document ID: SRE-CONTRACT-001
+Version: v0.1.0
+Contract-set version: v0.1.0
+Status: Draft — Constitutional Development
+Project: Structured-Request-Engine
+Normative dependency: SRE-CONTRACT-000 v0.1.0
+
+Normative Requirement Identifiers
+
+Every normative SHALL, SHALL NOT, SHOULD, SHOULD NOT, and MAY statement in this contract shall possess a stable requirement identifier.
+
+Requirement identifiers use the following format:
+
+SRE-001-<DOMAIN>-<SEQUENCE>
+
+Examples:
+
+SRE-001-INTAKE-001
+
+SRE-001-SOURCE-004
+
+SRE-001-IDENTITY-002
+
+Requirement identifiers exist solely for:
+
+traceability
+implementation verification
+conformance testing
+future amendment tracking
+
+They SHALL NOT alter the normative meaning of any requirement.
+
+1. Purpose
+
+Specification level: Constitutional Concept
+
+SRE-001-PURPOSE-001
+
+This contract establishes the constitutional boundary at which externally supplied or externally referenced material becomes admitted input to the Structured Request Engine.
+
+The purpose of Contract 001 is to define:
+
+what constitutes a source submission;
+how source submissions are admitted;
+how admitted sources are preserved;
+how submission identity and source identity are established;
+what mechanically observable information may be recorded during intake;
+the authoritative runtime artifacts produced by successful and unsuccessful admission;
+the authority limits of source admission.
+
+This contract intentionally does not define:
+
+semantic interpretation;
+objective extraction;
+constraint identification;
+capability inference;
+ambiguity analysis;
+request normalization;
+request validation beyond admission;
+canonical request construction;
+downstream authorization.
+
+Those responsibilities belong exclusively to subsequent contracts.
+
+Constitutional Objective
+
+SRE-001-PURPOSE-002
+
+The Structured Request Engine SHALL preserve every admitted source as the constitutional ground truth from which all later request construction proceeds.
+
+Interpretation SHALL always occur from admitted source.
+
+Interpretation SHALL never replace admitted source.
+
+Constitutional Outcome
+
+SRE-001-PURPOSE-003
+
+The successful completion of Contract 001 SHALL establish only that supplied material has been admitted into the Structured Request Engine under the rules of this contract.
+
+Successful admission SHALL NOT imply:
+
+semantic correctness;
+structural completeness;
+interpretation quality;
+downstream acceptance;
+execution authority;
+canonical request construction;
+authorization;
+feasibility.
+
+Admission records facts.
+
+Admission does not assign meaning.
+
+2. Architectural Identity
+
+Specification level: Constitutional Concept
+
+SRE-001-IDENTITY-001
+
+Contract 001 establishes the Source Admission Boundary of the Structured Request Engine.
+
+It is the exclusive constitutional owner of the transition between externally supplied material and internally admitted source artifacts.
+
+No subsequent contract may redefine the facts established by successful admission.
+
+Source Admission Boundary
+
+SRE-001-IDENTITY-002
+
+The Source Admission Boundary SHALL own only the following transformations:
+
+submission admission;
+submission validation for admissibility;
+submission identity establishment;
+source enumeration;
+source identity establishment;
+mechanically observable metadata capture;
+source preservation;
+encoding validation;
+creation of authoritative intake artifacts.
+
+No semantic transformation SHALL occur within this boundary.
+
+Observation Without Interpretation
+
+SRE-001-IDENTITY-003
+
+Contract 001 SHALL observe supplied material without assigning semantic meaning.
+
+It SHALL NOT:
+
+interpret natural language;
+infer objectives;
+infer constraints;
+infer capability requirements;
+infer assumptions;
+reconcile conflicting statements;
+normalize semantic representation;
+repair malformed meaning;
+evaluate request quality.
+
+Any implementation performing such work SHALL do so outside the authority granted by this contract.
+
+Constitutional Position
+
+The Source Admission Boundary occupies the first normative transformation following external submission.
+
+External Submission
+        │
+        ▼
+Source Admission Boundary
+        │
+        ▼
+SourceIntakeRecord
+        │
+        ▼
+Interpretation Boundary
+        │
+        ▼
+Subsequent Contracts
+
+Contract 001 therefore defines facts of admission, not facts of meaning.
+
+3. Authority Boundary
+
+Specification level: Constitutional Concept
+
+SRE-001-AUTH-001
+
+Contract 001 possesses authority only over source admission.
+
+Its authority begins upon receipt of externally supplied material.
+
+Its authority terminates immediately following the successful commitment of either:
+
+one SourceIntakeRecord, or
+one SourceIntakeFailureRecord.
+
+No authority established by this contract extends beyond source admission.
+
+Exclusive Responsibilities
+
+SRE-001-AUTH-002
+
+Contract 001 exclusively owns:
+
+submission admission;
+admissibility evaluation;
+source preservation;
+submission identity;
+source identity;
+intake metadata;
+encoding verification;
+source categorization;
+creation of intake artifacts.
+
+No later contract may silently replace or reinterpret these constitutional facts.
+
+Explicit Prohibitions
+
+SRE-001-AUTH-003
+
+Contract 001 SHALL NOT:
+
+identify objectives;
+construct request elements;
+identify constraints;
+identify capabilities;
+classify ambiguity;
+reconcile interpretation proposals;
+perform normalization;
+construct canonical requests;
+issue canonical request identities;
+authorize execution;
+authorize generation;
+authorize downstream systems.
+
+Those transformations belong exclusively to subsequent contracts.
+
+Admission Is Not Acceptance
+
+SRE-001-AUTH-004
+
+Admission SHALL mean only that supplied material has satisfied the constitutional requirements for entry into the Structured Request Engine.
+
+Admission SHALL NOT imply:
+
+correctness;
+truth;
+completeness;
+semantic validity;
+policy compliance;
+structural suitability beyond intake;
+authorization;
+downstream acceptance.
+
+Admission records the existence of supplied material.
+
+Admission does not endorse it.
+
+Authority Monotonicity
+
+SRE-001-AUTH-005
+
+As artifacts move beyond Contract 001, their semantic precision MAY increase.
+
+Their authority SHALL NOT increase by virtue of admission alone.
+
+The following transformations are constitutionally prohibited:
+
+Submission
+      ↓ Admission
+Permission
+
+Source
+      ↓ Preservation
+Authority
+
+Metadata
+      ↓ Capture
+Execution Rights
+
+Source Identity
+      ↓ Assignment
+Canonical Request Identity
+
+Admission may preserve.
+
+Admission may identify.
+
+Admission shall never authorize.
+
+Fundamental Authority Invariant
+
+SRE-001-AUTH-006
+
+Every completed source admission operation SHALL preserve:
+
+submission identity;
+source identity;
+source integrity;
+recoverable representation;
+mechanically observable admission facts;
+
+while assigning no semantic interpretation, no request meaning, no canonical request identity, and no execution authority.

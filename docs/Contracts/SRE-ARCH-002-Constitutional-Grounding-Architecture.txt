@@ -1,0 +1,498 @@
+# SRE-ARCH-002
+# Constitutional Grounding Architecture
+
+**Document ID:** SRE-ARCH-002  
+**Version:** 0.1.0  
+**Status:** Candidate Draft  
+**Classification:** Architectural Specification  
+**Authority:** Structured Request Engine Constitutional Architecture
+
+---
+
+# 1. Purpose
+
+This Architectural Specification defines the constitutional architecture governing **Grounding** within the Structured Request Engine (SRE).
+
+Grounding establishes the constitutional basis upon which represented semantic artifacts are supported while preserving strict separation between:
+
+- representation,
+- grounding,
+- provenance,
+- evaluation,
+- truth,
+- authorization.
+
+This specification defines reusable constitutional architecture.
+
+It does **not** define contract-specific behavior.
+
+Contracts implementing grounding SHALL conform to this specification.
+
+Initially these include:
+
+- SRE-CONTRACT-007 — Evidence Representation
+- SRE-CONTRACT-008 — Provenance Representation
+
+---
+
+# 2. Constitutional Definition
+
+## Grounding
+
+**Grounding** is the constitutional representation of support relationships between represented evidence and represented constitutional artifacts.
+
+Grounding records that constitutional support has been represented.
+
+Grounding SHALL NOT determine:
+
+- adequacy,
+- correctness,
+- relevance,
+- sufficiency,
+- confidence,
+- truth,
+- authorization.
+
+Grounding is representational.
+
+Grounding is not evaluative.
+
+---
+
+# 3. Constitutional Objectives
+
+This architecture SHALL establish a reusable constitutional framework for:
+
+- representing evidence;
+- representing support relationships;
+- preserving immutable constitutional support;
+- enabling deterministic replay;
+- enabling auditability;
+- enabling provenance;
+- enabling constitutional lineage.
+
+This architecture SHALL NOT:
+
+- determine correctness;
+- determine truth;
+- determine semantic meaning;
+- determine relevance;
+- determine evidence sufficiency;
+- authorize actions;
+- resolve conflicts;
+- perform policy evaluation.
+
+---
+
+# 4. Constitutional Scope
+
+## This specification governs
+
+- Evidence Representation
+- Grounding Representation Operations
+- Grounding Representation Profiles
+- Grounding Assertions
+- Grounding Sets
+- Grounding Identity
+- Grounding Publication
+- Grounding Failure Records
+
+---
+
+## This specification does not govern
+
+- Interpretation
+- Evidence Assessment
+- Evidence Sufficiency
+- Provenance
+- Canonicalization
+- Authorization
+- Policy
+- Runtime execution
+
+---
+
+# 5. Constitutional Principles
+
+## Principle 1 — Representation Before Judgment
+
+Grounding SHALL represent constitutional support.
+
+Grounding SHALL defer all evaluative decisions.
+
+---
+
+## Principle 2 — Evidence Independence
+
+Evidence SHALL remain constitutionally independent from the artifacts it supports.
+
+Semantic artifacts SHALL NOT own evidence.
+
+Evidence MAY support multiple constitutional artifacts.
+
+---
+
+## Principle 3 — Support Independence
+
+Support SHALL exist only through explicit Grounding Assertions.
+
+Support SHALL NOT be inferred solely from references.
+
+---
+
+## Principle 4 — Immutable Constitutional Grounding
+
+Grounding SHALL be immutable.
+
+Additional constitutional support SHALL create new constitutional objects.
+
+Previously published constitutional objects SHALL NOT be modified.
+
+---
+
+## Principle 5 — Bounded Authority
+
+Grounding SHALL establish constitutional support.
+
+Grounding SHALL NOT establish:
+
+- correctness;
+- truth;
+- confidence;
+- preference;
+- relevance;
+- sufficiency;
+- authority.
+
+---
+
+## Principle 6 — Representation Does Not Imply Evaluation
+
+Representation SHALL NEVER imply:
+
+- evaluation;
+- correctness;
+- truth;
+- authorization.
+
+---
+
+# 6. Constitutional Layering Model
+
+The Constitutional Grounding Architecture operates within the following complementary constitutional layering model.
+
+## Constitutional Representation Layer
+
+Answers:
+
+> What constitutional artifacts have been represented?
+
+Produces semantic constitutional objects.
+
+Examples include:
+
+- Objectives
+- Constraints
+- Capability Requirements
+- Ambiguity
+- Assumptions
+
+---
+
+## Constitutional Grounding Layer
+
+Answers:
+
+> Why does a represented constitutional artifact exist?
+
+Produces constitutional support.
+
+Examples include:
+
+- Evidence Representation
+- Grounding Assertions
+- Grounding Sets
+
+---
+
+## Constitutional Processing Layer
+
+Answers:
+
+> What deterministic constitutional processing occurs after grounding?
+
+Produces deterministic constitutional transformations.
+
+Examples include:
+
+- Reconciliation
+- Canonicalization
+- Validation
+
+These layers describe constitutional responsibilities.
+
+They SHALL NOT be interpreted as mandatory runtime execution phases.
+
+---
+
+# 7. Constitutional Object Model
+
+The Constitutional Grounding Architecture defines the following constitutional objects.
+
+---
+
+## 7.1 Evidence Representation
+
+Evidence Representation records constitutional supporting material.
+
+It answers:
+
+> What supporting material has been represented?
+
+Evidence Representation SHALL NOT determine:
+
+- truth;
+- correctness;
+- relevance;
+- sufficiency.
+
+---
+
+## 7.2 Grounding Assertion
+
+Grounding Assertion records one constitutional support relationship.
+
+It answers:
+
+> What constitutional artifact is supported?
+
+Grounding Assertions SHALL:
+
+- possess immutable identity;
+- remain independently versionable;
+- remain independently auditable;
+- participate in provenance.
+
+Grounding Assertions SHALL NOT own:
+
+- evidence;
+- semantic artifacts.
+
+Grounding Assertions own only constitutional support relationships.
+
+Grounding Assertions SHALL be issued only by an authorized Grounding Representation Operation operating under an applicable Grounding Representation Profile.
+
+---
+
+## 7.3 Grounding Representation Profile
+
+Grounding Representation Profiles govern:
+
+- representation structure;
+- supported relationship forms;
+- permitted attachment mechanisms;
+- structural validity.
+
+Profiles SHALL NOT perform:
+
+- assessment;
+- ranking;
+- preference;
+- relevance determination;
+- sufficiency evaluation.
+
+---
+
+## 7.4 Grounding Set
+
+Grounding Set represents the immutable publication produced by one Grounding Representation Operation.
+
+Grounding Sets SHALL:
+
+- possess immutable identity;
+- represent one publication event;
+- support deterministic replay;
+- support versioned publication.
+
+Grounding Sets SHALL NOT accumulate assertions over time.
+
+New publication SHALL produce a new Grounding Set.
+
+---
+
+## 7.5 Grounding Failure Record
+
+Grounding Failure Record represents the immutable constitutional artifact produced when a Grounding Representation Operation cannot successfully construct a Grounding Set while preserving constitutional invariants.
+
+Failure Records SHALL:
+
+- preserve auditability;
+- preserve replayability;
+- preserve architectural accountability.
+
+Failure Records SHALL NOT authorize alternative grounding behavior.
+
+---
+
+# 8. Canonical Grounding Pattern
+
+Grounding SHALL follow the Canonical Grounding Pattern.
+
+```text
+Grounding Authority
+        ↓
+Grounding Representation Operation
+        ↓
+Grounding Representation Profile
+        ↓
+Evidence Representation
+        ↓
+Grounding Assertion
+        ↓
+Grounding Set
+        ↓
+Grounding Failure Record
+        ↓
+Deferred Constitutional Decisions
+```
+
+This pattern defines constitutional relationships.
+
+It SHALL NOT prescribe implementation order.
+
+---
+
+# 9. Identity Model
+
+Grounding defines independent constitutional identities.
+
+## Evidence Identity
+
+Identifies represented evidence.
+
+Evidence identity SHALL remain stable regardless of additional support relationships.
+
+---
+
+## Grounding Assertion Identity
+
+Identifies one immutable constitutional support relationship.
+
+Each Grounding Assertion SHALL possess a unique identity.
+
+Grounding Assertions SHALL NOT be modified after publication.
+
+---
+
+## Grounding Set Identity
+
+Identifies one immutable publication produced by one Grounding Representation Operation.
+
+Additional support SHALL produce new Grounding Sets.
+
+Previously published Grounding Sets SHALL remain immutable.
+
+---
+
+# 10. Constitutional Relationships
+
+Grounding relationships SHALL remain explicit constitutional objects.
+
+Supported relationship forms MAY include:
+
+- Supports
+- Partially Supports
+- References
+- Derived From
+- Aggregates
+- Refines
+- Supersedes
+
+Relationship semantics remain representational only.
+
+---
+
+# 11. Constitutional Doctrine
+
+Grounding SHALL establish constitutional support.
+
+Grounding SHALL NOT establish:
+
+- correctness;
+- truth;
+- preference;
+- confidence;
+- relevance;
+- sufficiency;
+- authority.
+
+Representation SHALL NEVER imply evaluation.
+
+---
+
+# 12. Architectural Dependencies
+
+## Depends upon
+
+- SRE-CONTRACT-000 — Constitutional Foundation
+- SRE-CONTRACT-001 — Canonical Inputs
+- SRE-CONTRACT-002 — Interpretation Boundary
+- SRE-ARCH-001 — Canonical Representation Pattern
+
+---
+
+## Governs
+
+- SRE-CONTRACT-007 — Evidence Representation
+- SRE-CONTRACT-008 — Provenance Representation
+
+---
+
+# 13. Implementation Guidance (Informative)
+
+This section is informative and non-normative.
+
+Contract 007 should implement:
+
+- Evidence Representation
+- Grounding Representation Profiles
+- Grounding Assertions
+- Grounding Sets
+
+Contract 008 should implement:
+
+- Provenance Representation
+- Lineage
+- Custody
+- Origin
+- Transformation History
+
+Neither contract should assume the constitutional responsibilities of the other.
+
+---
+
+# 14. Future Evolution (Informative)
+
+This section is informative and non-normative.
+
+A recurring constitutional lifecycle pattern has emerged across multiple architectural domains:
+
+```text
+Authority
+        ↓
+Constitutional Operation
+        ↓
+Immutable Constitutional Object
+        ↓
+Published Set
+        ↓
+Deferred Constitutional Decisions
+```
+
+The pattern appears consistently across representation and grounding.
+
+However, it has not yet been established as a universal constitutional architecture.
+
+If future architectural evidence confirms that this lifecycle is reusable across the Structured Request Engine, it SHOULD be extracted into a dedicated architectural specification (provisionally **SRE-ARCH-003 — Constitutional Lifecycle Pattern**).
+
+Until such confirmation exists, this specification limits itself to constitutional grounding.

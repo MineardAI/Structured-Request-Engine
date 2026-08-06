@@ -1,0 +1,341 @@
+structured-engine-request
+section 6 Source Admission Lifestyle
+
+6. Source Admission Lifecycle
+
+Specification level: Required Observable Behavior
+
+Contract 001 defines the deterministic lifecycle by which externally supplied submissions become constitutionally admitted source artifacts.
+
+This lifecycle governs only admission.
+
+It SHALL NOT assign semantic meaning, construct request elements, or authorize downstream behavior.
+
+6.1 Intake Initiation
+
+SRE-001-INTAKE-001
+
+Source admission SHALL begin when an externally supplied submission is presented to the Source Admission Boundary.
+
+An intake operation SHALL be initiated for each submission event.
+
+Every intake operation SHALL possess exactly one immutable submission identity.
+
+Submission identities SHALL remain stable throughout the lifetime of the intake operation.
+
+Constitutional Principle
+
+Submission identity identifies the admission event.
+
+It does not identify:
+
+admitted sources;
+canonical requests;
+semantic meaning;
+downstream authority.
+6.2 Submission Enumeration
+
+SRE-001-INTAKE-002
+
+Before admission evaluation begins, the Source Admission Boundary SHALL enumerate all submitted source components.
+
+Enumeration SHALL identify:
+
+directly supplied sources;
+externally referenced sources;
+application-supplied components;
+implementation-defined constitutional inputs.
+
+Enumeration SHALL preserve the externally observable structure of the submission.
+
+Enumeration SHALL NOT infer missing components.
+
+Enumeration Rule
+
+The order in which components are received SHALL NOT alter constitutional meaning.
+
+Deterministic ordering requirements belong to later contracts.
+
+6.3 Admission Evaluation
+
+SRE-001-INTAKE-003
+
+Every enumerated component SHALL undergo admission evaluation.
+
+Admission evaluation SHALL determine only whether the component satisfies constitutional intake requirements.
+
+Admission evaluation MAY consider:
+
+encoding support;
+structural admissibility;
+implementation limits;
+required submission fields;
+reference admissibility.
+
+Admission evaluation SHALL NOT consider:
+
+semantic correctness;
+inferred intent;
+request quality;
+objective completeness;
+policy compliance.
+Admissibility
+
+A component SHALL receive one admission evaluation result:
+
+Admissible
+
+Rejected
+
+Unavailable
+
+Unsupported
+
+Incomplete
+
+Malformed
+
+The resulting constitutional source admission state SHALL remain one of the states defined by `SRE-001-SOURCE-002`, including `Pending`, `Received`, `Accepted`, `Rejected`, `Unavailable`, `Malformed`, `Unsupported`, `Incomplete`, or `Redacted`.
+
+For terminal Composite Admission Policy mapping, an `Admissible` evaluation result corresponds to the `Accepted` source admission state unless the applicable policy expressly preserves another contract-authorized state.
+
+No semantic classification SHALL occur during admission evaluation.
+
+6.3.1 Composite Admission Policy Resolution
+
+SRE-001-POLICY-001
+
+The Source Admission Boundary SHALL resolve exactly one Composite Admission Policy before terminal operation commitment.
+
+When no expressly authorized versioned intake profile is supplied, the boundary SHALL use the Contract 001 default Composite Admission Policy defined in Section 5.6.2.
+
+SRE-001-POLICY-002
+
+An authorized intake profile SHALL be immutable, identified, versioned, adopted by an authority permitted by Contract 001, and bound to the intake operation before admission outcome determination.
+
+The profile SHALL expose its identity, version, adoption reference, applicable scope, complete component-state mapping, mixed-component rule, successful-state set, failure-requiring-state set, unresolved-state treatment, and replay inputs.
+
+An implementation SHALL NOT select a profile by convenience, ambient configuration, transport, operator preference, or undeclared context.
+
+SRE-001-POLICY-003
+
+The Composite Admission Policy SHALL evaluate component state independently from operation outcome.
+
+Every enumerated component SHALL retain its source identity, category, observed admission state, preservation facts, and any policy mapping result. The policy SHALL then determine exactly one operation-level outcome for the complete enumeration.
+
+SRE-001-POLICY-004
+
+Under the default policy:
+
+- `Accepted` components are compatible with a successful `SourceIntakeRecord`.
+- `Redacted` components are compatible with a successful `SourceIntakeRecord` only when constitutional existence, source identity, preservation/integrity facts, redaction state, and authorized redaction basis remain represented.
+- `Rejected`, `Unavailable`, `Unsupported`, `Incomplete`, and `Malformed` components require a `SourceIntakeFailureRecord`.
+- `Pending` and `Received` are non-terminal observed states; if unresolved at commitment, they require a `SourceIntakeFailureRecord`.
+
+The default policy SHALL use failure if any enumerated component has a failure-requiring or unresolved non-terminal state.
+
+SRE-001-POLICY-005
+
+An authorized versioned profile MAY permit `Unavailable`, `Unsupported`, or `Incomplete` components in a successful `SourceIntakeRecord` only as explicit unresolved admission states and only under the mandatory profile fields, preservation requirements, and prohibitions defined by `SRE-001-SOURCE-009` through `SRE-001-SOURCE-011`.
+
+No profile SHALL permit silent admission of `Rejected` or `Malformed` components, removal of an enumerated component, replacement of an observed state, semantic interpretation, or partial authoritative commitment.
+
+SRE-001-POLICY-006
+
+For identical declared inputs, observed component facts, and bound Composite Admission Policy identity and version, conforming implementations SHALL produce equivalent component-state representations and the same terminal operation outcome.
+
+Component state SHALL remain distinct from operation outcome. A successful `SourceIntakeRecord` containing an explicitly profile-authorized unresolved component state SHALL not be treated as a `SourceIntakeFailureRecord`, and a `SourceIntakeFailureRecord` SHALL not erase the observed component states that caused the failure.
+
+6.4 Source Registration
+
+SRE-001-SOURCE-006
+
+Every admitted source SHALL receive:
+
+exactly one immutable source identity;
+one constitutional source category;
+one constitutional admission state.
+
+These assignments SHALL occur before successful intake commitment.
+
+Source identities SHALL remain stable throughout the lifetime of request construction.
+
+Identity Assignment
+
+Source identity SHALL identify admitted material only.
+
+It SHALL NOT imply:
+
+canonical request identity;
+semantic equivalence;
+execution authority;
+downstream acceptance.
+6.5 Metadata Capture
+
+SRE-001-METADATA-001
+
+Contract 001 SHALL capture only mechanically observable metadata.
+
+Captured metadata MAY include:
+
+observable timestamps;
+media type;
+declared encoding;
+byte length;
+supplied filenames;
+reference identifiers;
+transport-independent structural characteristics.
+
+Semantic interpretation SHALL NOT occur during metadata capture.
+
+Metadata Integrity
+
+Captured metadata SHALL remain traceable to the admitted source.
+
+Later contracts MAY reference metadata.
+
+They SHALL NOT silently alter constitutional metadata.
+
+6.6 Preservation
+
+SRE-001-PRESERVE-002
+
+Immediately following successful admission evaluation, every admitted source SHALL become constitutionally preserved.
+
+Preservation SHALL guarantee recoverable representation throughout subsequent request construction.
+
+Preservation MAY occur through:
+
+immutable content;
+immutable references;
+cryptographic integrity mechanisms;
+implementation-defined preservation strategies.
+
+The implementation mechanism is non-normative.
+
+The preservation guarantee is normative.
+
+6.7 Intake Artifact Construction
+
+SRE-001-ARTIFACT-001
+
+Following successful admission and preservation, Contract 001 SHALL construct exactly one SourceIntakeRecord.
+
+The SourceIntakeRecord SHALL constitute the authoritative representation of admitted source material.
+
+The record SHALL contain sufficient information to support:
+
+downstream interpretation;
+provenance;
+deterministic reconstruction;
+source identification;
+submission identification.
+
+The record SHALL preserve every enumerated component and its observed state, including components represented as `Accepted`, `Redacted`, or profile-authorized unresolved states. It SHALL identify the Composite Admission Policy identity and version used for the operation.
+
+Internal representation remains implementation-defined.
+
+6.8 Intake Failure Construction
+
+SRE-001-ARTIFACT-002
+
+If constitutional admission cannot successfully complete, Contract 001 SHALL construct exactly one SourceIntakeFailureRecord.
+
+Failure construction SHALL identify:
+
+submission identity;
+observed admission facts;
+constitutional failure category;
+affected sources when applicable.
+
+The failure record SHALL preserve every enumerated component and its observed state, including components that were individually accepted before the operation-level failure. A failure record SHALL NOT silently remove accepted, rejected, unavailable, unsupported, incomplete, malformed, redacted, pending, or received components from the constitutional account of the intake operation.
+
+Failure artifacts SHALL NOT assign semantic interpretation.
+
+Failure Meaning
+
+Admission failure SHALL indicate only that constitutional intake could not complete.
+
+It SHALL NOT imply:
+
+request invalidity;
+user error;
+semantic inconsistency;
+downstream rejection.
+6.9 Atomic Commitment
+
+SRE-001-COMMIT-001
+
+Every intake operation SHALL terminate with exactly one committed constitutional outcome.
+
+Permitted outcomes are:
+
+one SourceIntakeRecord; or
+one SourceIntakeFailureRecord.
+
+Both outcomes SHALL NOT exist for the same intake operation.
+
+Neither outcome SHALL be absent.
+
+Commitment Atomicity
+
+Commitment SHALL be atomic.
+
+Partial authoritative admission SHALL NOT exist.
+
+Component-level admission states SHALL NOT be treated as operation-level outcomes. The Composite Admission Policy SHALL determine the one terminal artifact for the complete enumeration before atomic commitment.
+
+Diagnostic information MAY accompany committed artifacts.
+
+Diagnostics SHALL NOT replace constitutional artifacts.
+
+6.10 Downstream Handoff
+
+SRE-001-HANDOFF-001
+
+Successful completion of Contract 001 authorizes only evaluation under Contract 002.
+
+Successful intake SHALL NOT authorize:
+
+semantic interpretation;
+request construction;
+canonical request identity;
+execution;
+planning;
+provider selection;
+generation;
+release.
+
+Contract 001 transfers preserved source.
+
+It does not transfer semantic authority.
+
+6.11 Intake Completion
+
+SRE-001-INTAKE-004
+
+An intake operation SHALL be considered complete only after one constitutional outcome has been atomically committed.
+
+Completion SHALL establish:
+
+immutable submission identity;
+immutable source identities;
+constitutional preservation;
+mechanically observable admission facts;
+authoritative intake artifact.
+
+Completion SHALL establish nothing further.
+
+Fundamental Intake Lifecycle Invariant
+
+SRE-001-INTAKE-005
+
+Every completed source admission lifecycle SHALL:
+
+preserve every admitted source;
+establish immutable submission identity;
+establish immutable source identity;
+preserve mechanically observable admission facts;
+produce exactly one committed intake artifact;
+
+while creating no semantic interpretation, no request meaning, no canonical request identity, no execution authority, and no downstream authorization.

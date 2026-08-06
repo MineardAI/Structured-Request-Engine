@@ -1,0 +1,361 @@
+##  structured-engine-request sec 005 Canonical Inputs
+
+5. Canonical Inputs
+
+Specification level: Required Observable Behavior
+
+Contract 001 defines the constitutional inputs that may be admitted into the Structured Request Engine.
+
+These inputs establish the complete set of information available to the Source Admission Boundary.
+
+No undeclared information SHALL influence source admission.
+
+5.1 Admissible Input Classes
+
+SRE-001-INPUT-001
+
+The Source Admission Boundary MAY admit one or more externally supplied input classes.
+
+Supported classes SHALL include at least:
+
+Interactive user input
+Structured application requests
+API submissions
+Uploaded artifacts
+Referenced artifacts
+Composite submissions
+
+Additional classes MAY be introduced by later versions provided they preserve the constitutional requirements of this contract.
+
+Constitutional Principle
+
+Every admitted input SHALL possess a traceable origin.
+
+Anonymous constitutional inputs SHALL NOT exist.
+
+5.2 Source Submission
+
+SRE-001-INPUT-002
+
+A Source Submission represents the externally observable event presented for admission.
+
+A submission MAY contain:
+
+one source;
+multiple sources;
+references to external sources;
+application-supplied metadata;
+implementation-defined transport metadata.
+
+The transport mechanism SHALL NOT affect constitutional meaning.
+
+Equivalent submissions received through different transports SHALL remain constitutionally equivalent once admitted.
+
+5.3 Source Categories
+
+SRE-001-SOURCE-001
+
+Every admitted source SHALL be assigned exactly one constitutional source category.
+
+The initial constitutional registry SHALL include:
+
+NaturalLanguage
+
+StructuredData
+
+BinaryArtifact
+
+ReferencedArtifact
+
+ApplicationSupplied
+
+CompositeSource
+
+Future versions MAY extend this registry.
+
+Existing category semantics SHALL NOT change incompatibly.
+
+Category Meaning
+
+Source categories describe representation only.
+
+They SHALL NOT imply:
+
+semantic meaning;
+interpretation strategy;
+downstream processing requirements;
+execution authority.
+5.4 Source State Registry
+
+SRE-001-SOURCE-002
+
+Every source SHALL possess exactly one constitutional admission state.
+
+The initial constitutional registry SHALL include:
+
+Pending
+
+Received
+
+Accepted
+
+Rejected
+
+Unavailable
+
+Malformed
+
+Unsupported
+
+Incomplete
+
+Redacted
+
+Future contract revisions MAY introduce additional states.
+
+State definitions SHALL remain mutually exclusive.
+
+State Authority
+
+Admission states describe only intake.
+
+They SHALL NOT imply:
+
+semantic quality;
+request validity;
+downstream acceptance;
+execution eligibility.
+5.5 Source References
+
+SRE-001-SOURCE-003
+
+A submission MAY include references rather than directly supplied material.
+
+Examples include:
+
+file references;
+document identifiers;
+URLs;
+object identifiers;
+application resource identifiers.
+
+A reference SHALL remain a reference until explicitly resolved under constitutional authority.
+
+Contract 001 SHALL NOT infer the contents of unresolved references.
+
+Reference Preservation
+
+Original reference values SHALL remain recoverable.
+
+Later contracts MAY describe resolved content.
+
+They SHALL preserve the original reference.
+
+5.6 Composite Submissions
+
+SRE-001-SOURCE-004
+
+A submission MAY contain multiple independent sources.
+
+Examples include:
+
+User message
+
++
+
+PDF
+
++
+
+Spreadsheet
+
++
+
+Application metadata
+
+Each admitted source SHALL receive:
+
+its own source identity;
+its own category;
+its own admission state.
+
+Composite admission SHALL NOT merge source identities.
+
+5.6.1 Component State and Operation Outcome
+
+SRE-001-SOURCE-007
+
+Component admission state SHALL remain distinct from the intake operation outcome.
+
+The component state describes the observed constitutional intake condition of one enumerated component. The operation outcome SHALL be exactly one terminal `SourceIntakeRecord` or exactly one terminal `SourceIntakeFailureRecord`.
+
+Neither terminal outcome SHALL be inferred solely from the name of a component state without applying the active Composite Admission Policy.
+
+5.6.2 Composite Admission Policy
+
+SRE-001-SOURCE-008
+
+Every intake operation SHALL use one Composite Admission Policy.
+
+A Composite Admission Policy SHALL be either:
+
+- the Contract 001 default policy defined in this contract; or
+- an expressly authorized, immutable, versioned intake profile that conforms to this contract.
+
+An authorized profile SHALL NOT expand Contract 001 authority, introduce semantic interpretation, or define a component state outside the Contract 001 source-state registry.
+
+SRE-001-SOURCE-009
+
+Every Composite Admission Policy or authorized profile SHALL identify:
+
+- immutable policy or profile identity;
+- policy or profile version;
+- authority and adoption reference;
+- applicable submission and component classes;
+- an exhaustive mapping for every Contract 001 component state;
+- the mixed-component rule for composite submissions;
+- the successful component-state set;
+- the failure-requiring component-state set;
+- the treatment of unresolved or non-terminal observed states;
+- the exact `SourceIntakeRecord` or `SourceIntakeFailureRecord` binding;
+- all identity-bearing inputs and version bindings required for deterministic replay.
+
+The policy or profile SHALL be recorded in the committed terminal artifact or an immutable reference bound to it.
+
+SRE-001-SOURCE-010
+
+The default Composite Admission Policy, used when no authorized profile is supplied, SHALL apply the following mapping:
+
+- `Accepted` is compatible with successful operation-level admission.
+- `Redacted` is compatible with successful operation-level admission only when the source identity, constitutional existence, redaction state, preservation/integrity facts, and authorized redaction basis are preserved.
+- `Rejected`, `Unavailable`, `Unsupported`, `Incomplete`, and `Malformed` require a `SourceIntakeFailureRecord` for the intake operation.
+- `Pending` and `Received` are non-terminal observed states and SHALL NOT be treated as successful terminal admission. If either remains unresolved at commitment, the operation SHALL produce a `SourceIntakeFailureRecord` identifying the unresolved state.
+
+The default policy SHALL require a failure outcome when any enumerated component has a failure-requiring or unresolved non-terminal state.
+
+SRE-001-SOURCE-011
+
+An expressly authorized versioned profile MAY permit `Unavailable`, `Unsupported`, or `Incomplete` components to remain represented in a successful `SourceIntakeRecord` as explicit unresolved admission states only if:
+
+- the profile identifies each permitted state and its exact successful mapping;
+- the profile defines the mixed-component rule and declares whether all other components must be `Accepted` or may also be represented unresolved;
+- the profile preserves every enumerated component, source identity, observed state, affected-source fact, and unresolved condition;
+- the profile does not permit `Rejected` or `Malformed` components to be silently admitted;
+- the profile does not permit component removal, replacement, semantic interpretation, or partial authoritative commitment; and
+- the profile identity and version are bound to the successful `SourceIntakeRecord` and replay inputs.
+
+No profile may make a component state disappear from the committed artifact or convert a component state into semantic invalidity, downstream rejection, or execution authority.
+
+SRE-001-SOURCE-012
+
+For identical declared submissions, identical observed component facts, and identical Composite Admission Policy identity and version, the operation-level outcome SHALL be deterministic and equivalent across conforming implementations.
+
+Different implementations MAY use different policy-resolution or preservation mechanisms only when they produce the same required component-state representations and the same terminal operation outcome under the same declared inputs and version context.
+
+Silent component removal, silent rejection, silent state substitution, and policy selection based on undeclared context are prohibited.
+
+5.7 Application-Supplied Information
+
+SRE-001-SOURCE-005
+
+Applications MAY supply additional information during submission.
+
+Examples include:
+
+user selections;
+interface state;
+structured request fields;
+API parameters;
+declared metadata.
+
+Application-supplied information SHALL remain distinguishable from user-supplied source.
+
+Contract 001 SHALL preserve this distinction.
+
+Constitutional Separation
+
+Application information
+
+≠
+
+User source
+
+Neither SHALL overwrite the other.
+
+5.8 Unsupported Inputs
+
+SRE-001-INPUT-003
+
+The Source Admission Boundary SHALL explicitly identify unsupported submission conditions.
+
+Examples include:
+
+unsupported encoding;
+unsupported media type;
+implementation limits;
+corrupted transport;
+unreadable submission.
+
+Unsupported conditions SHALL produce explicit intake failure or explicit unresolved admission state.
+
+Silent rejection SHALL NOT occur.
+
+5.9 Undeclared Context
+
+SRE-001-INPUT-004
+
+Contract 001 SHALL NOT admit undeclared contextual information as constitutional input.
+
+Examples include:
+
+hidden prompts;
+mutable application state;
+runtime globals;
+provider defaults;
+cached interpretation;
+undocumented session variables.
+
+If such information materially affects admission, it SHALL be represented explicitly as constitutional input.
+
+Constitutional Invariant
+
+The admitted input set SHALL completely define the constitutional facts available to Contract 001.
+
+No hidden information SHALL influence admission outcomes.
+
+5.10 Input Completeness
+
+SRE-001-INPUT-005
+
+Contract 001 SHALL evaluate only whether sufficient information exists to perform source admission.
+
+It SHALL NOT evaluate whether sufficient information exists to understand the request.
+
+Examples:
+
+Admission complete
+
+≠
+
+Interpretation complete
+Admitted source
+
+≠
+
+Complete request
+
+Completeness of meaning belongs exclusively to later contracts.
+
+Fundamental Input Invariant
+
+SRE-001-INPUT-006
+
+Every admitted input SHALL possess:
+
+traceable origin;
+constitutional source category;
+constitutional admission state;
+immutable submission association;
+immutable source identity;
+
+while remaining free from semantic interpretation, request construction, or execution authority.

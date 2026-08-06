@@ -1,0 +1,24 @@
+/target/
+**/*.rs.bk
+*.pdb
+*.profraw
+*.profdata
+coverage/
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Internal workspace instructions and execution history are not part of the
+# public source publication set.
+/AGENTS.md
+/REPOSITORY_COMMANDS.md
+/REPOSITORY_RULES.md
+/docs/Prompts/
+/PROJECT_SUITE/STATUS_LOG/

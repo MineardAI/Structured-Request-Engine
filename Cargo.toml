@@ -1,0 +1,20 @@
+[package]
+name = "structured-request-engine"
+version = "0.1.0"
+edition = "2021"
+description = "Deterministic, provenance-preserving request representation with bounded Contract 000-015 implementations"
+license = "Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/MineardAI/Structured-Request-Engine"
+homepage = "https://github.com/MineardAI/Structured-Request-Engine"
+keywords = ["request-representation", "provenance", "deterministic"]
+
+[lib]
+name = "structured_request_engine"
+path = "src/lib.rs"
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[lints.clippy]
+all = "deny"

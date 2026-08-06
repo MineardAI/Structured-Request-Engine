@@ -1,0 +1,815 @@
+# Structured Request Engine
+
+## Contract Planning Record
+
+**Document ID:** `SRE-CONTRACT-PLAN`
+**Version:** `v0.1.0`
+**Status:** Adopted Planning Baseline with Prototype Feedback Gate
+**Project:** Structured-Request-Engine
+**Rust package family:** `structured-request-*`
+
+---
+
+# 1. Purpose
+
+This document defines the planning framework for the Structured Request Engine contract series.
+
+It establishes:
+
+* the purpose of the contract series;
+* the project’s architectural and authority boundaries;
+* the proposed contract inventory;
+* the dependency order between contracts;
+* the canonical artifact families that require definition;
+* the review and adoption process;
+* the conditions that must be satisfied before implementation planning begins;
+* the relationship between contract planning, implementation planning, and Codex implementation.
+
+This document does not itself define the complete runtime behavior of the Structured Request Engine.
+
+It governs how those definitions will be created, reviewed, adopted, and transferred into implementation planning.
+
+---
+
+# 2. Project identity
+
+The Structured Request Engine is the portable request-structuring boundary for Mineard AI systems.
+
+Its role is:
+
+> Convert source input into a canonical, provenance-preserving, machine-readable representation of what was requested without granting execution authority, selecting providers, planning work, invoking tools, producing an answer, or releasing output.
+
+The engine may identify and represent:
+
+* requested objectives;
+* declared constraints;
+* capability requirements;
+* source references;
+* ambiguities;
+* assumptions;
+* uncertainty;
+* interpretation evidence;
+* relationships among request elements;
+* provenance and lineage.
+
+The engine may not transform those descriptions into permission to act.
+
+The fundamental project distinction is:
+
+```text
+CanonicalStructuredRequest
+        ≠ AuthorizedRequest
+        ≠ GenerationEnvelope
+        ≠ ExecutionPlan
+        ≠ GeneratedOutput
+```
+
+Canonicalization records a request in a stable form.
+
+Canonicalization is not authorization.
+
+---
+
+# 3. Architectural position
+
+The Structured Request Engine occupies the boundary between source submission and downstream authority evaluation.
+
+```text
+Human / Application / API Input
+                │
+                ▼
+      Structured Request Engine
+                │
+                ▼
+      CanonicalStructuredRequest
+                │
+                ▼
+        Authority / Governance
+        IBOS, SACS, or another
+        authorized runtime boundary
+                │
+                ▼
+         GenerationEnvelope
+                │
+                ▼
+         Generation-Stack
+                │
+                ▼
+        Caller-supplied Provider
+```
+
+The Structured Request Engine belongs before:
+
+* authority evaluation;
+* governance decisions;
+* planning;
+* generation;
+* provider invocation;
+* tool execution;
+* output release.
+
+It does not belong inside:
+
+* Generation-Stack;
+* IBOS-Lite;
+* Local-Model-Provider;
+* SACS;
+* Persona Forge;
+* a concrete model provider;
+* a tool runtime;
+* an execution system.
+
+Those systems may consume or reference its output, but they must not redefine or silently alter its canonical request contracts.
+
+---
+
+# 4. Contract-program objective
+
+The contract program shall produce a complete normative specification from which the Structured Request Engine can be implemented without requiring the implementer to invent architectural meaning.
+
+The contract program must define:
+
+1. what enters the system;
+2. what artifacts may be constructed;
+3. which artifacts are proposals rather than authoritative records;
+4. which transformations are deterministic;
+5. which component owns each transformation;
+6. how source evidence is preserved;
+7. how ambiguities and assumptions are represented;
+8. how objectives and constraints are represented;
+9. how capability requirements remain distinct from authority;
+10. how conflicting proposals are handled;
+11. how canonical ordering is established;
+12. how structural validity is evaluated;
+13. how deterministic identity is calculated;
+14. how failures are represented;
+15. what may be handed to downstream authority;
+16. what the downstream handoff does not imply.
+
+The contract program shall also distinguish among four levels of specification:
+
+1. **Constitutional concepts** — semantic or authority distinctions that every conforming implementation must preserve.
+2. **Logical artifacts** — normative information groupings that must be representable but need not become standalone runtime objects or Rust types.
+3. **Required runtime artifacts** — inspectable runtime values that every conforming implementation must construct, consume, or emit.
+4. **Implementation conveniences** — internal structures that an implementation may use but that are not required by the contracts.
+
+A named concept in a contract shall not automatically require a dedicated Rust type, module, file, state object, or serialized artifact.
+
+Each contract shall classify its major concepts and artifacts before reaching Candidate status.
+
+---
+
+# 5. Contract-program principles
+
+The complete contract series shall preserve the following principles.
+
+## 5.1 Canonicalization is not authorization
+
+A `CanonicalStructuredRequest` represents what was requested in a deterministic machine-readable form.
+
+It does not mean that the request is:
+
+* approved;
+* permitted;
+* safe;
+* feasible;
+* funded;
+* authenticated;
+* executable;
+* schedulable;
+* supported by available capabilities.
+
+## 5.2 Interpretation is not authority
+
+An interpreter may be:
+
+* a language model;
+* a rules engine;
+* a form parser;
+* an application adapter;
+* a symbolic system;
+* a manually supplied implementation.
+
+Its output is an interpretation proposal.
+
+Interpretation proposals are untrusted inputs to deterministic request construction.
+
+No interpreter may independently issue a canonical request.
+
+## 5.3 Complete representation is not complete understanding
+
+A request may be canonically complete while retaining unresolved ambiguity.
+
+The engine shall not invent certainty merely to produce a structurally complete artifact.
+
+```text
+Complete representation
+        ≠
+Complete understanding
+```
+
+## 5.4 Capability requirement is not capability authority
+
+A capability requirement describes what may be needed to satisfy a request.
+
+It does not establish:
+
+* that the capability exists;
+* that a connector is configured;
+* that credentials are available;
+* that access is permitted;
+* that a specific provider or tool should be selected;
+* that execution may begin.
+
+## 5.5 Evidence must remain traceable
+
+Interpreted request elements must retain explicit evidence linking them to source material or another declared origin.
+
+The engine must distinguish:
+
+* source-explicit content;
+* interpreter-inferred content;
+* application-supplied content;
+* referenced-artifact content;
+* normalized representation.
+
+## 5.6 Determinism begins after interpretation input
+
+An external interpreter may be nondeterministic.
+
+Once interpretation proposals and their evidence enter the deterministic engine boundary, all subsequent processing covered by the contracts must produce reproducible results for equivalent inputs, versions, registries, and configurations.
+
+## 5.7 Authority may not expand through representation
+
+No stage may convert:
+
+* a requested action into permission;
+* a capability need into access;
+* an inferred objective into user consent;
+* an ambiguity into a guessed fact;
+* an interpreter suggestion into policy;
+* a canonical request into a generation envelope.
+
+## 5.8 Semantic identity and submission identity are distinct
+
+Multiple submissions may have different event identities while representing the same canonical request semantics.
+
+The contracts shall distinguish at least:
+
+```text
+Submission identity
+    Identifies a particular intake event.
+
+Canonical request identity
+    Identifies the canonical semantic representation.
+
+Source identity
+    Identifies the supplied source material.
+
+Interpretation identity
+    Identifies a particular interpretation proposal.
+```
+
+## 5.9 Meaning shall remain distinct from implementation form
+
+The contract series shall define constitutional meaning and required observable behavior.
+
+It shall not prescribe a particular internal implementation unless that implementation detail is necessary for:
+
+* deterministic behavior;
+* interoperability;
+* canonical identity;
+* serialization compatibility;
+* authority preservation;
+* externally observable conformance.
+
+The same logical artifact may be implemented as:
+
+* a dedicated runtime type;
+* fields within a larger artifact;
+* an internal validated view;
+* a generated representation;
+* another equivalent structure.
+
+Implementation equivalence is permitted only when the required semantics, provenance, determinism, and authority boundaries remain observable and testable.
+
+---
+
+# 6. Scope of the contract series
+
+The contract series shall govern:
+
+* source intake;
+* source identity;
+* interpretation requests;
+* interpretation proposals;
+* evidence representation;
+* objective representation;
+* constraint representation;
+* capability requirement representation;
+* ambiguity and assumption representation;
+* provenance;
+* reconciliation;
+* normalization;
+* duplicate treatment;
+* contradiction detection;
+* completeness evaluation;
+* canonical ordering;
+* canonical request construction;
+* deterministic identity;
+* serialization;
+* failures;
+* downstream handoff.
+
+The contract series shall not govern:
+
+* model training;
+* model selection;
+* provider selection;
+* prompt optimization for generation;
+* agent planning;
+* task decomposition for execution;
+* policy approval;
+* safety authorization;
+* credential acquisition;
+* connector activation;
+* tool selection;
+* tool execution;
+* generation;
+* output moderation;
+* output release;
+* long-term memory;
+* general workflow orchestration.
+
+---
+
+# 7. Planned canonical lifecycle
+
+The contract series shall refine the following lifecycle:
+
+```text
+Source Submission
+        │
+        ▼
+Source Intake Record
+        │
+        ▼
+Interpretation Request
+        │
+        ▼
+Untrusted Interpretation Proposal
+        │
+        ▼
+Interpretation Evidence Validation
+        │
+        ▼
+Proposal Reconciliation
+        │
+        ▼
+Representation Normalization
+        │
+        ▼
+Constraint and Contradiction Evaluation
+        │
+        ▼
+Canonical Ordering
+        │
+        ▼
+Structural Validation
+        │
+        ▼
+Canonical Request Construction
+        │
+        ├── success ──► CanonicalStructuredRequest
+        │
+        └── failure ──► StructuredRequestFailureRecord
+```
+
+The successful output may be submitted to a separate authority boundary.
+
+```text
+CanonicalStructuredRequest
+        │
+        ▼
+Downstream authority evaluation
+        │
+        ├── accepted within bounded authority
+        ├── rejected
+        ├── deferred
+        ├── restricted
+        └── clarification required
+```
+
+These downstream decisions are outside the Structured Request Engine.
+
+---
+
+# 8. Prototype feedback gate
+
+After Contracts 000 through 005 reach at least Candidate status, the project may construct a minimal walking-skeleton prototype.
+
+The prototype exists only to test whether the constitutional distinctions survive contact with implementation.
+
+The prototype shall exercise:
+
+```text
+Source input
+    ↓
+Interpretation proposal
+    ↓
+Minimal deterministic canonicalization
+    ↓
+CanonicalStructuredRequest
+    ↓
+Non-authorizing handoff
+```
+
+The prototype shall be classified as:
+
+* experimental;
+* non-production;
+* non-canonical;
+* non-conforming until evaluated;
+* replaceable without compatibility guarantees.
+
+The prototype shall not:
+
+* establish the final public API;
+* establish the final crate structure;
+* establish the final serialization format;
+* become the de facto contract;
+* invoke providers for answer generation;
+* perform policy authorization;
+* perform planning;
+* perform execution;
+* issue a `GenerationEnvelope`;
+* introduce compatibility commitments.
+
+Its outputs shall be treated as architectural evidence, not as canonical project artifacts.
+
+Prototype findings may result in amendments to Contracts 000 through 005.
+
+Any such amendment shall be explicit, versioned, reviewed, and recorded before later contracts rely on the changed behavior.
+
+---
+
+# 9. Contract-family organization
+
+The planned contracts are divided into four families.
+
+## 9.1 Constitutional contracts
+
+These establish project identity, authority, source boundaries, and the interpretation boundary.
+
+## 9.2 Request-artifact contracts
+
+These establish the ontology used to represent what was requested.
+
+## 9.3 Deterministic-processing contracts
+
+These establish how proposals are transformed into a canonical request.
+
+## 9.4 Issuance and handoff contracts
+
+These establish canonical construction, deterministic identity, failure issuance, and downstream transfer.
+
+---
+
+# 10. Proposed contract inventory
+
+The numbering below is a planning baseline.
+
+Contract numbers and titles become frozen only when this planning record is adopted.
+
+The separation of normative contracts does not require equivalent implementation decomposition.
+
+Multiple contracts may map to one implementation subsystem, crate, module, or validation pipeline.
+
+In particular, evidence, provenance, identity, and serialization may remain separate normative concerns while being implemented through a shared subsystem.
+
+---
+
+## Contract 000 — Architecture, Identity, and Authority
+
+**Purpose:** Establish the constitutional identity of the Structured Request Engine.
+
+**Must define:**
+
+* project purpose;
+* architectural position;
+* authority boundary;
+* canonicalization doctrine;
+* prohibited responsibilities;
+* relationship to downstream authority;
+* relationship to Generation-Stack;
+* relationship to interpreter implementations;
+* one-authority-per-transformation principle;
+* fundamental system invariant.
+
+**Primary output:** Constitutional architecture contract.
+
+**Artifact classification:** Primarily constitutional concepts; no dedicated runtime artifact is required solely because this contract exists.
+
+**Depends on:** None.
+
+---
+
+## Contract 001 — Source Submission and Intake
+
+**Purpose:** Define what may enter the request-structuring lifecycle and how source submissions are recorded.
+
+**Must define:**
+
+* source submission;
+* source content categories;
+* source references;
+* submission identity;
+* source identity;
+* source metadata;
+* source boundaries;
+* encoding requirements;
+* unsupported source states;
+* unavailable or malformed content;
+* source preservation requirements;
+* intake failure conditions.
+
+**Primary output:** Canonical `SourceIntakeRecord` or explicit intake failure.
+
+**Artifact classification:** To be assigned during drafting as constitutional concept, logical artifact, required runtime artifact, or implementation convenience.
+
+**Depends on:** Contract 000.
+
+---
+
+## Contract 002 — Interpretation Boundary
+
+**Purpose:** Define the optional boundary between source intake and an interpretation implementation.
+
+**Must define:**
+
+* `InterpretationRequest`;
+* `InterpretationProposal`;
+* interpreter identity;
+* interpreter version;
+* interpretation bounds;
+* finish status;
+* evidence requirements;
+* proposal status;
+* untrusted-proposal doctrine;
+* transport neutrality;
+* malformed and incomplete responses;
+* prohibition against canonical issuance by the interpreter.
+
+**Primary output:** One or more accepted interpretation proposals eligible for deterministic evaluation, or explicit interpretation-boundary failure.
+
+**Artifact classification:** To be assigned during drafting as constitutional concept, logical artifact, required runtime artifact, or implementation convenience.
+
+**Depends on:** Contracts 000–001.
+
+---
+
+## Contract 003 — Objectives and Objective Relationships
+
+**Purpose:** Define how requested outcomes are represented.
+
+**Must define:**
+
+* declared objective;
+* primary objective;
+* secondary objective;
+* objective origin;
+* objective evidence;
+* objective scope;
+* objective relationships;
+* conditional objectives;
+* compound and parallel objectives;
+* objective normalization;
+* unsupported or contradictory objective states.
+
+**Planning position:** Version `v0.1` may require one normalized primary objective while permitting related subordinate objectives.
+
+This is a normalization structure and must not claim that every source naturally contains one dominant objective.
+
+**Primary artifact:** `DeclaredObjectiveSet`.
+
+**Artifact classification:** To be assigned during drafting as constitutional concept, logical artifact, required runtime artifact, or implementation convenience.
+
+**Depends on:** Contracts 000–002.
+
+---
+
+## Contract 004 — Declared Constraints
+
+**Purpose:** Define how source-level limits and conditions are represented without interpreting them as downstream policy.
+
+**Must define:**
+
+* explicit constraints;
+* inferred constraints;
+* application-supplied constraints;
+* negative constraints;
+* required inclusions;
+* exclusions;
+* temporal constraints;
+* format constraints;
+* resource constraints;
+* confidentiality constraints;
+* scope constraints;
+* evidence and origin;
+* conflicting constraints;
+* constraint priority when explicitly supplied;
+* prohibition against policy invention.
+
+**Primary artifact:** `DeclaredConstraintSet`.
+
+**Artifact classification:** To be assigned during drafting as constitutional concept, logical artifact, required runtime artifact, or implementation convenience.
+
+**Depends on:** Contracts 000–003.
+
+---
+
+## Contract 005 — Capability Requirements
+
+**Purpose:** Define abstract capability needs without selecting tools, providers, connectors, or execution methods.
+
+**Must define:**
+
+* capability class;
+* capability description;
+* requirement necessity;
+* requirement origin;
+* evidence basis;
+* optional and conditional requirements;
+* unsupported capability descriptions;
+* capability relationships;
+* distinction between requirement and authorization.
+
+**Required origin classes should include:**
+
+* `ExplicitSource`;
+* `InterpreterInference`;
+* `ApplicationSupplied`;
+* `ReferencedArtifact`.
+
+**Primary artifact:** `CapabilityRequirementSet`.
+
+**Artifact classification:** To be assigned during drafting as constitutional concept, logical artifact, required runtime artifact, or implementation convenience.
+
+**Depends on:** Contracts 000–004.
+
+---
+
+## Contract 006 — Ambiguities, Assumptions, and Uncertainty
+
+**Purpose:** Preserve unresolved meaning rather than silently resolving it.
+
+**Must define:**
+
+* ambiguity records;
+* ambiguity alternatives;
+* ambiguity severity;
+* ambiguity scope;
+* assumption records;
+* assumption origin;
+* explicit versus inferred assumptions;
+* uncertainty representation;
+* clarification requirements;
+* survivable ambiguity;
+* blocking ambiguity;
+* prohibition against silent resolution;
+* relationship between completeness and understanding.
+
+**Primary artifacts:**
+
+* `AmbiguitySet`;
+* `AssumptionSet`;
+* `UncertaintyRecordSet`.
+
+**Artifact classification:** To be assigned during drafting as constitutional concept, logical artifact, required runtime artifact, or implementation convenience.
+
+**Depends on:** Contracts 000–005.
+
+---
+
+## Contract 007 — Interpretation Evidence and Source Grounding
+
+**Purpose:** Define how interpreted request elements remain linked to source material.
+
+**Must define:**
+
+* evidence identifiers;
+* source spans;
+* referenced artifacts;
+* evidence origin;
+* evidence confidence;
+* evidence sufficiency;
+* evidence relationships;
+* unsupported interpretation fields;
+* evidence integrity;
+* normalized evidence references;
+* prohibition against unsupported authoritative claims.
+
+**Primary artifact:** `InterpretationEvidenceSet`.
+
+**Artifact classification:** To be assigned during drafting as constitutional concept, logical artifact, required runtime artifact, or implementation convenience.
+
+**Depends on:** Contracts 001–006.
+
+---
+
+## Contract 008 — Request Provenance and Lineage
+
+**Purpose:** Define the full provenance chain for request construction.
+
+**Must define:**
+
+* submission provenance;
+* source provenance;
+* interpreter provenance;
+* application provenance;
+* normalization provenance;
+* registry and configuration versions;
+* proposal lineage;
+* field-level lineage;
+* artifact relationships;
+* deterministic reconstruction requirements;
+* provenance completeness;
+* lineage failure conditions.
+
+**Primary artifact:** `RequestProvenanceRecord`.
+
+**Artifact classification:** To be assigned during drafting as constitutional concept, logical artifact, required runtime artifact, or implementation convenience.
+
+**Depends on:** Contracts 001–007.
+
+---
+
+## Contract 009 — Proposal Reconciliation
+
+**Purpose:** Define deterministic treatment of multiple or internally complex interpretation proposals.
+
+**Must define:**
+
+* proposal acceptance criteria;
+* proposal comparison;
+* duplicate identification;
+* equivalent proposal handling;
+* conflicting proposal handling;
+* source-precedence rules;
+* explicit-source precedence;
+* application-supplied information;
+* interpreter disagreements;
+* unresolved alternatives;
+* deterministic reconciliation reports;
+* prohibition against meaning invention.
+
+**Primary output:** `ReconciledRequestProposal` or explicit reconciliation failure.
+
+**Artifact classification:** To be assigned during drafting as constitutional concept, logical artifact, required runtime artifact, or implementation convenience.
+
+**Depends on:** Contracts 002–008.
+
+---
+
+## Contract 010 — Representation Normalization
+
+**Purpose:** Transform accepted request representations into stable, equivalent forms without altering their meaning.
+
+**Must define:**
+
+* text normalization;
+* identifier normalization;
+* enum normalization;
+* whitespace and encoding rules;
+* unit representation;
+* temporal representation;
+* locale-sensitive representation;
+* numeric representation;
+* collection normalization;
+* duplicate removal;
+* normalization idempotence;
+* meaning-preservation requirements;
+* normalization failures.
+
+**Primary output:** `NormalizedRequestRepresentation`.
+
+**Artifact classification:** To be assigned during drafting as constitutional concept, logical artifact, required runtime artifact, or implementation convenience.
+
+**Depends on:** Contracts 003–009.
+
+---
+
+## Contract 011 — Canonical Ordering and Representation
+
+**Purpose:** Define deterministic ordering and canonical structural representation.
+
+**Must define:**
+
+* ordering of objectives;
+* ordering of constraints;
+* ordering of capability requirements;
+* ordering of ambiguities;
+* ordering of assumptions;
+* ordering of evidence;
+* ordering of provenance entries;
+* canonical
