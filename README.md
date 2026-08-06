@@ -473,6 +473,6 @@ Security reports should not be submitted through public GitHub issues, discussio
 
 ## License and contribution
 
-Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) and [LICENSE-APACHE](LICENSE-APACHE).
+Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE).
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for development expectations.
