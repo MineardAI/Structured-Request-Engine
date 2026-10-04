@@ -476,3 +476,20 @@ Security reports should not be submitted through public GitHub issues, discussio
 Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE).
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for development expectations.
+
+## Approved local Ulantra profile
+
+`local_governed_text` supplies the approved `ulantra-governed-text-sre-v1 / 1.0.0`
+local development path through the existing operations. A caller-owned
+`ExternalInterpreter` supplies the exact whole utterance as a direct quotation;
+this profile rejects inferred semantics and preserves the text through issuance.
+`prepare_handoff`, `verify_received`, and `complete_handoff` preserve package-before-
+receipt ordering and require the declared recipient's acknowledgment. Receipt
+assigns bounded evaluation responsibility; it does not grant runtime permission.
+
+Local bindings are explicit and do not call fixture constructors. Historical
+`Fixture*` type names remain compatible with existing tests and callers. These
+bindings are a local deployment assignment, not constitutional admission or
+universal SRE authority. There is no persistence or provider/model call here.
+The existing Ulantra/IBOS example owns recipient receipt and independent runtime
+evaluation. Its public projection exposes bounded lineage references.

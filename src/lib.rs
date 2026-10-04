@@ -9237,6 +9237,7 @@ pub fn represent_semantic_clarification(
     }
     if upstream.proposal_schema_version != "proposal-fixture-v4"
         && upstream.proposal_schema_version != "proposal-fixture-v5"
+        && upstream.proposal_schema_version != "ulantra-literal-proposal-v1"
     {
         return fail(
             MeaningQualificationFailureCategory::InvalidProposalAdmissionBinding,
@@ -10085,7 +10086,9 @@ pub fn represent_evidence(
             "evidence configuration is incomplete",
         );
     }
-    if upstream.proposal_schema_version != "proposal-fixture-v5" {
+    if upstream.proposal_schema_version != "proposal-fixture-v5"
+        && upstream.proposal_schema_version != "ulantra-literal-proposal-v1"
+    {
         return fail(
             EvidenceRepresentationFailureCategory::InvalidProposalSchema,
             "Contract 007 requires the typed evidence proposal schema",
@@ -15853,16 +15856,21 @@ pub fn perform_structural_validation(
             Vec::new().into(),
         );
     }
-    if publication.profile_binding
-        != (
-            CanonicalOrderingProfileId::derive(&["contract-011-fixture"]),
-            "fixture-ordering-v1".to_owned(),
-        )
-    {
+    let required_ordering_binding =
+        if profile.identity == FixtureValidationProfile::local_governed_text().identity {
+            let ordering = FixtureCanonicalOrderingProfile::local_governed_text();
+            (ordering.identity, ordering.version)
+        } else {
+            (
+                CanonicalOrderingProfileId::derive(&["contract-011-fixture"]),
+                "fixture-ordering-v1".to_owned(),
+            )
+        };
+    if publication.profile_binding != required_ordering_binding {
         return validation_failure(
             input,
             ValidationFailureCategory::IncompatibleValidationContext,
-            "ordered publication is not from the required Contract 011 fixture context",
+            "ordered publication is not from the required Contract 011 profile context",
             Vec::new().into(),
         );
     }
@@ -19688,30 +19696,7 @@ pub fn perform_canonical_request_handoff(
     acknowledgments: &[ReceiptAcknowledgment],
     authorities: &FixtureHandoffAuthorityContext,
 ) -> CanonicalRequestHandoffOutcome {
-    if request.canonical_structured_request_id != input.canonical_structured_request_id
-        || issuance_manifest.issuance_manifest_id != input.issuance_manifest_id
-        || issuance_manifest.issuance_id != input.issuance_operation_id
-        || request.issuance_id != issuance_manifest.issuance_id
-        || request.canonical_request_construction_id
-            != issuance_manifest.canonical_request_construction_id
-        || request.initial_standing != InitialStanding::Issued
-        || request.content_integrity_binding
-            != constructed_request_content_binding(&request.exact_constructed_request)
-        || issuance_manifest
-            .issued_publication_binding
-            .canonical_structured_request_id
-            != request.canonical_structured_request_id
-        || issuance_manifest
-            .issued_publication_binding
-            .construction_manifest_id
-            != request.construction_manifest_id
-        || issuance_manifest
-            .issued_publication_binding
-            .standing_assignment_id
-            != request.standing_assignment_id
-        || issuance_manifest.publication_binding
-            != issuance_publication_binding(request, issuance_manifest)
-    {
+    if !issuance_pair_matches(input, request, issuance_manifest) {
         return handoff_failure(
             input,
             HandoffFailureCategory::IssuancePublicationSetIntegrityFailure,
@@ -19780,10 +19765,12 @@ pub fn perform_canonical_request_handoff(
     }
     if input.transport_binding != authorities.transport.identity
         || context.reference_mode != authorities.profile.reference_mode
-        || context.schema_version != "fixture-handoff-schema-v1"
+        || !(context.schema_version == "fixture-handoff-schema-v1"
+            || local_governed_text::valid_handoff_context(boundary, context, authorities))
         || context.registry_version != authorities.registries.version
         || context.configuration_version != authorities.configuration.version
-        || context.implementation_version != "sre-runtime-fixture-v1"
+        || !(context.implementation_version == "sre-runtime-fixture-v1"
+            || local_governed_text::valid_handoff_context(boundary, context, authorities))
     {
         return handoff_failure(
             input,
@@ -19794,43 +19781,7 @@ pub fn perform_canonical_request_handoff(
             acknowledgments,
         );
     }
-    let package_id = HandoffPackageManifestId::derive(&[
-        input.handoff_id.as_str(),
-        request.canonical_structured_request_id.as_str(),
-        issuance_manifest.issuance_manifest_id.as_str(),
-        context.handoff_context_id.as_str(),
-    ]);
-    let package = HandoffPackageManifest {
-        handoff_package_manifest_id: package_id.clone(),
-        handoff_id: input.handoff_id.clone(),
-        handoff_context_id: context.handoff_context_id.clone(),
-        canonical_structured_request_id: request.canonical_structured_request_id.clone(),
-        issuance_manifest_id: issuance_manifest.issuance_manifest_id.clone(),
-        issuance_operation_id: issuance_manifest.issuance_id.clone(),
-        sender_boundary_id: context.sender_boundary_id.clone(),
-        recipient_boundary_id: context.recipient_boundary_id.clone(),
-        downstream_boundary_declaration_id: boundary.declaration_id.clone(),
-        downstream_boundary_declaration_version: boundary.declaration_version.clone(),
-        handoff_profile_id: context.handoff_profile_id.clone(),
-        handoff_profile_version: context.handoff_profile_version.clone(),
-        transfer_rule_set_id: context.transfer_rule_set_id.clone(),
-        transfer_rule_set_version: context.transfer_rule_set_version.clone(),
-        reference_mode: context.reference_mode.clone(),
-        transfer_purpose: context.transfer_purpose.clone(),
-        integrity_bindings: issuance_manifest.publication_binding.clone(),
-        transport_binding_reference: authorities.transport.identity.clone(),
-        expiration_basis: context.expiration_policy.clone(),
-        retry_basis: context.retry_policy.clone(),
-        duplicate_basis: context.duplicate_policy.clone(),
-        provenance_continuity_references: vec![
-            request.constructed_canonical_request_id.to_string(),
-            issuance_manifest.issuance_manifest_id.to_string(),
-        ]
-        .into(),
-        schema_version: context.schema_version.clone(),
-        registry_version: context.registry_version.clone(),
-        configuration_version: context.configuration_version.clone(),
-    };
+    let package = form_handoff_package(input, request, issuance_manifest, boundary, context);
     if input.issuance_publication_binding != issuance_manifest.publication_binding
         || package.reference_mode != "ReferenceOnly"
         || package.integrity_bindings != issuance_manifest.publication_binding
@@ -20020,7 +19971,11 @@ pub fn perform_canonical_request_handoff(
         CustodyDisposition::NotTransferred
     };
     let responsibility = if received.is_some() && authorities.profile.responsibility_on_received {
-        HandoffResponsibilityDisposition::TransferredToDeclaredBoundary
+        if authorities.responsibility_rules.rule_id == "ulantra-evaluation-responsibility-v1" {
+            HandoffResponsibilityDisposition::AssignedToDeclaredGovernanceBoundary
+        } else {
+            HandoffResponsibilityDisposition::TransferredToDeclaredBoundary
+        }
     } else {
         HandoffResponsibilityDisposition::RetainedBySre
     };
@@ -20678,4 +20633,83 @@ mod contract_015_tests {
             .contains("Execute"));
         assert!(!record.package_manifest.transfer_purpose.contains("Execute"));
     }
+}
+
+pub mod local_governed_text;
+mod local_profile_bindings;
+
+fn form_handoff_package(
+    input: &CanonicalRequestHandoffInput,
+    request: &CanonicalStructuredRequest,
+    issuance_manifest: &IssuanceManifest,
+    boundary: &DownstreamBoundaryDeclaration,
+    context: &HandoffContext,
+) -> HandoffPackageManifest {
+    let package_id = HandoffPackageManifestId::derive(&[
+        input.handoff_id.as_str(),
+        request.canonical_structured_request_id.as_str(),
+        issuance_manifest.issuance_manifest_id.as_str(),
+        context.handoff_context_id.as_str(),
+    ]);
+    HandoffPackageManifest {
+        handoff_package_manifest_id: package_id.clone(),
+        handoff_id: input.handoff_id.clone(),
+        handoff_context_id: context.handoff_context_id.clone(),
+        canonical_structured_request_id: request.canonical_structured_request_id.clone(),
+        issuance_manifest_id: issuance_manifest.issuance_manifest_id.clone(),
+        issuance_operation_id: issuance_manifest.issuance_id.clone(),
+        sender_boundary_id: context.sender_boundary_id.clone(),
+        recipient_boundary_id: context.recipient_boundary_id.clone(),
+        downstream_boundary_declaration_id: boundary.declaration_id.clone(),
+        downstream_boundary_declaration_version: boundary.declaration_version.clone(),
+        handoff_profile_id: context.handoff_profile_id.clone(),
+        handoff_profile_version: context.handoff_profile_version.clone(),
+        transfer_rule_set_id: context.transfer_rule_set_id.clone(),
+        transfer_rule_set_version: context.transfer_rule_set_version.clone(),
+        reference_mode: context.reference_mode.clone(),
+        transfer_purpose: context.transfer_purpose.clone(),
+        integrity_bindings: issuance_manifest.publication_binding.clone(),
+        transport_binding_reference: input.transport_binding.clone(),
+        expiration_basis: context.expiration_policy.clone(),
+        retry_basis: context.retry_policy.clone(),
+        duplicate_basis: context.duplicate_policy.clone(),
+        provenance_continuity_references: vec![
+            request.constructed_canonical_request_id.to_string(),
+            issuance_manifest.issuance_manifest_id.to_string(),
+        ]
+        .into(),
+        schema_version: context.schema_version.clone(),
+        registry_version: context.registry_version.clone(),
+        configuration_version: context.configuration_version.clone(),
+    }
+}
+
+fn issuance_pair_matches(
+    input: &CanonicalRequestHandoffInput,
+    request: &CanonicalStructuredRequest,
+    issuance_manifest: &IssuanceManifest,
+) -> bool {
+    !(request.canonical_structured_request_id != input.canonical_structured_request_id
+        || issuance_manifest.issuance_manifest_id != input.issuance_manifest_id
+        || issuance_manifest.issuance_id != input.issuance_operation_id
+        || request.issuance_id != issuance_manifest.issuance_id
+        || request.canonical_request_construction_id
+            != issuance_manifest.canonical_request_construction_id
+        || request.initial_standing != InitialStanding::Issued
+        || request.content_integrity_binding
+            != constructed_request_content_binding(&request.exact_constructed_request)
+        || issuance_manifest
+            .issued_publication_binding
+            .canonical_structured_request_id
+            != request.canonical_structured_request_id
+        || issuance_manifest
+            .issued_publication_binding
+            .construction_manifest_id
+            != request.construction_manifest_id
+        || issuance_manifest
+            .issued_publication_binding
+            .standing_assignment_id
+            != request.standing_assignment_id
+        || issuance_manifest.publication_binding
+            != issuance_publication_binding(request, issuance_manifest))
 }
